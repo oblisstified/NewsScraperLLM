@@ -1,18 +1,14 @@
 #News scraper that scapes latest news on a website and summarizes the articles
 import requests
 from bs4 import BeautifulSoup
-from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
-import pandas as pd
 from dotenv import load_dotenv
-import openai
 import os
-from itertools import islice
-
 
 headers = {"User-Agent": "Mozilla/5.0"}
 
 sentences_to_remove = ["Oops, something went wrong", "Sign in to access your portfolio", "Something went wrong", "Read more here"]
+
 #scrapes news articles and returns a list of objects
 def scrape_news():
     url = "https://finance.yahoo.com/topic/latest-news/"
@@ -73,7 +69,6 @@ def summarize_articles(articles):
             print(summary)
             print("----------------------------------------------------")
             print("")
-
 
         except Exception as e:
             print(f" Error summarizing {article['title']}: {e}")
