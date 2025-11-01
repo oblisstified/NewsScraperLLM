@@ -1,9 +1,9 @@
 #News scraper that scapes latest news on a website and summarizes the articles
 import requests
 from bs4 import BeautifulSoup
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
+from openai import OpenAI
 
 headers = {"User-Agent": "Mozilla/5.0"}
 
@@ -47,20 +47,18 @@ def summarize_articles(articles):
     """Summarize each article using OpenAI"""
     load_dotenv()  # Loads environment variables from .env
 
-    model = ChatOpenAI(
-        model="gpt-4o-mini",
-        temperature=0,
-        openai_api_key=os.getenv("OPENAI_API_KEY")
-    )
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     summarized = []
 
     for article in articles:
         try:
             prompt = f"Summarize this article in 50 words or less:\n\n{article['text']}"
-            response = model.invoke(prompt)
-
-            summary = response.content if hasattr(response, "content") else str(response)
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            summary = response.choices[0].message.content
             article["summary"] = summary
             summarized.append(article)
 
